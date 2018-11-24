@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dummy External App</title>
+</head>
+
+<body>
+    <h1>Dummy External App</h1>
+    <h3>Logged in with BadgeBook? <span id="login-status"></span></h3>
+    <button id="login-with-badgebook" hidden="true">Sign In With BadgeBook</button>
+    <button id="log-out-of-badgebook" hidden="true">Sign Out</button>
+    <button id="bug-server">Bug Server</button>
+    <h4>Server Response: <span id="server-response"></span></h4>
+
+    <script src="./js/token-handler.js"></script>
+    <script>
+        (function init() {   
+            let $loginStatusDisplay = document.getElementById('login-status');
+            let $loginButton        = document.getElementById('login-with-badgebook');
+            let $logoutButton       = document.getElementById('log-out-of-badgebook');
+            let $bugServerButton    = document.getElementById('bug-server');
+            let $serverResponse     = document.getElementById('server-response');
+
+            // Setup button handlers
+            $loginButton.onclick        = handleClickLogin;
+            $logoutButton.onclick       = handleClickLogout;
+            $bugServerButton.onclick    = handleClickBugServer;
+
+            function render() {
+                let loggedIn = badgeBookTokenHandler.isBadgeBookUserLoggedIn();
+                $loginStatusDisplay.innerHTML = `${loggedIn}`;
+                if (loggedIn) {
+                    $logoutButton.removeAttribute('hidden');
+                    $loginButton.setAttribute('hidden', true);
+                }
+                else {
+                    $loginButton.removeAttribute('hidden');
+                    $logoutButton.setAttribute('hidden', true);
+                }
+            }
+
+            function handleClickLogout() {
+                console.log('go');
+                badgeBookTokenHandler.clearAccessToken();
+                render();
+            }
+            
+            function handleClickLogin() {
+                badgeBookTokenHandler.loginWithBadgeBook();
+            }
+
+            function handleClickBugServer() {
+                let url = `${window.location.origin}/am-i-logged-in`;
+                console.log(url);
+                fetch(url)
+                .then(res => res.ok ? res.text() : 'Error')
+                .then(res => {
+                    $serverResponse.innerHTML = res;
+                })
+            }
+
+            render();
+        })();
+    </script>
+</body>
+
+</html>
